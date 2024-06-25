@@ -21,44 +21,38 @@ var transporter = nodemailer.createTransport({
         pass: 'qrzd kzzf frag ivtz'
     }
 });
-
 // Endpoint POST '/register': Maneja el registro de nuevos usuarios
 users.post('/register', function(req, res) {
-    var today = new Date(); // Obtiene la fecha actual
+    var today = new Date();
     var appData = {
         "error": 1,
         "data": ""
     };
-    // Objeto con los datos del usuario obtenidos del cuerpo de la solicitud (req.body)
+
     var userData = {
         "email": req.body.email,
-        "password": bcrypt.hashSync(req.body.password, 10), // Encripta la contraseña antes de almacenarla
-        "created": today // Almacena la fecha y hora actual de registro
+        "password": bcrypt.hashSync(req.body.password, 10),
+        "created": today
     };
-    console.log("Contraseña encriptada:", userData.password);
 
-    // Conexión a la base de datos
     database.connection.getConnection(function(err, connection) {
         if (err) {
-            // Manejo de errores de conexión
+            console.error("Error en la conexión a la base de datos:", err);
             appData["error"] = 1;
             appData["data"] = "Error en en servidor interno";
             res.status(500).json(appData);
         } else {
-            // Ejecución de la consulta SQL para insertar datos del usuario en la tabla 'users'
             connection.query('INSERT INTO users SET ?', userData, function(err, rows, fields) {
                 if (!err) {
-                    // Si la consulta se realiza con éxito
                     appData.error = 0;
                     appData["data"] = "Usuario registrado correctamente!";
-                    res.status(201).json(appData); // Respuesta con código HTTP 201 (Created)
+                    res.status(201).json(appData);
                 } else {
-                    // Si hay un error al ejecutar la consulta SQL
+                    console.error("Error al ejecutar la consulta SQL:", err);
                     appData["data"] = "Ocurrió un error!";
-                    res.status(400).json(appData); // Respuesta con código HTTP 400 (Bad Request)
+                    res.status(400).json(appData);
                 }
             });
-            // Liberación de la conexión a la base de datos
             connection.release();
         }
     });
@@ -87,7 +81,11 @@ users.post('/login', function(req, res) {
                     if (rows.length > 0) {
                         bcrypt.compare(password, rows[0].password, function(err, result) {
                             if (result) {
-                                let token = jwt.sign(rows[0], process.env.SECRET_KEY, {
+                                let payload = {
+                                    id: rows[0].id,
+                                    email: rows[0].email
+                                };
+                                let token = jwt.sign(payload, process.env.SECRET_KEY, {
                                     expiresIn: 1440
                                 });
                                 appData.error = 0;
@@ -110,6 +108,7 @@ users.post('/login', function(req, res) {
         }
     });
 });
+
 
 // Middleware para verificar la validez del token JWT en las solicitudes entrantes
 users.use(function(req, res, next) {
