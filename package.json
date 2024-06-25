@@ -1,21 +1,31 @@
 {
   "name": "login-conectarlab",
   "version": "1.0.0",
-  "description": "LOGIN CONECTARLAB",
-  "main": "login.js",
+  "description": "Login para ConectarLAB-Chaco",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
-  "author": "FRAN",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/francogodoyy/login_conectarlab.git"
+  },
+  "author": "Franco Godoy",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/francogodoyy/login_conectarlab/issues"
+  },
+  "homepage": "https://github.com/francogodoyy/login_conectarlab#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "crypto": "^1.0.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
-    "nodemailer": "^6.9.13",
-    "path": "^0.12.7",
-    "react": "^18.3.1"
+    "nodemailer": "^6.9.14",
+    "path": "^0.12.7"
   }
 }
